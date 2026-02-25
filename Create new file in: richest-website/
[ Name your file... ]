@@ -1,0 +1,50 @@
+function loadData(list){
+  const container = document.getElementById("container");
+  container.innerHTML = "";
+
+  list.forEach(b => {
+    container.innerHTML += `
+      <div class="card">
+        <img src="${b.photo}" alt="">
+        <h2 class="logo"><span>${b.name}</span></h2>
+
+        <p><span class="highlight">Net Worth: ${b.networth}</span></p>
+        <p><b>Country:</b> ${b.country}</p>
+        <p><b>Cars:</b> ${b.cars.join(", ")}</p>
+        <p><b>Family:</b> ${b.family}</p>
+        <p><b>Food:</b> ${b.food} (${b.meat})</p>
+        <p><b>Best Work:</b> ${b.best_work}</p>
+
+        <button onclick="openAsk()" class="highlight">Ask Question</button>
+      </div>
+    `;
+  });
+}
+
+/* SEARCH FUNCTION */
+document.getElementById("search").addEventListener("keyup", function(){
+  const v = this.value.toLowerCase();
+  const filtered = billionaires.filter(b =>
+    b.name.toLowerCase().includes(v) ||
+    b.country.toLowerCase().includes(v) ||
+    b.cars.join(" ").toLowerCase().includes(v)
+  );
+  loadData(filtered);
+});
+
+/* ASK QUESTION POPUP */
+function openAsk(){
+  document.getElementById("askBox").classList.remove("hidden");
+}
+
+function closeAsk(){
+  document.getElementById("askBox").classList.add("hidden");
+}
+
+function sendQuestion(){
+  alert("Your question has been submitted!");
+  closeAsk();
+}
+
+/* INITIAL LOAD */
+loadData(billionaires);
