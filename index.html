@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billionaire Vault - दुनिया के सबसे अमीर लोग</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #FFD700;
+            --dark-gold: #B8860B;
+            --platinum: #E5E4E2;
+            --dark-bg: #0a0a0a;
+            --card-bg: #1a1a1a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(184, 134, 11, 0.1) 0%, transparent 50%);
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(45deg, var(--gold), var(--platinum), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+
+        .subtitle {
+            color: var(--platinum);
+            font-size: 1.2rem;
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+
+        /* Search & Filter */
+        .controls {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        input, select {
+            padding: 12px 20px;
+            border: 2px solid var(--gold);
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            border-radius: 30px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus {
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            transform: scale(1.05);
+        }
+
+        /* Grid Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        /* Billionaire Card */
+        .billionaire-card {
+            background: linear-gradient(145deg, var(--card-bg) 0%, #2a2a2a 100%);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .billionaire-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,215,0,0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s;
+            opacity: 0;
+        }
+
+        .billionaire-card:hover::before {
+            animation: shimmer 0.5s ease-in-out;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); opacity: 0; }
+        }
+
+        .billionaire-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.3);
+            border-color: var(--gold);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .profile-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--gold);
+            object-fit: cover;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .basic-info h3 {
+            color: var(--gold);
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+
+        .rank {
+            background: linear-gradient(45deg, var(--gold), var(--dark-gold));
+            color: #000;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .net-worth {
+            font-size: 1.3rem;
+            color: #00ff88;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        /* Details Sections */
+        .details {
+            display: grid;
+            gap: 12px;
+        }
+
+        .detail-item {
+            background: rgba(0,0,0,0.3);
+            padding: 10px 15px;
+            border-radius: 10px;
+            border-left: 3px solid var(--gold);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .detail-label {
+            color: var(--platinum);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-value {
+            color: #fff;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .icon {
+            font-size: 1.2rem;
+        }
+
+        /* Tags */
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, rgba(255,215,0,0.2), rgba(184,134,11,0.2));
+            border: 1px solid var(--gold);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--gold);
+        }
+
+        /* Scroll Buttons */
+        .scroll-controls {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .scroll-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .scroll-up {
+            background: linear-gradient(45deg, #FF6B6B, #FF8E53);
+            color: white;
+        }
+
+        .scroll-down {
+            background: linear-gradient(45deg, #4ECDC4, #556270);
+            color: white;
+        }
+
+        .scroll-btn:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 30px rgba(255,255,255,0.5);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--gold), var(--platinum));
+            z-index: 1001;
+            transition: width 0.1s;
+        }
+
+        /* Loading Animation */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.5rem;
+            color: var(--gold);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,215,0,0.3);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .container { grid-template-columns: 1fr; }
+            .controls { flex-direction: column; }
+        }
+
+        /* Modal for Details */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            max-width: 800px;
+            margin: 50px auto;
+            background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid var(--gold);
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 2rem;
+            color: var(--gold);
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .fundamental-score {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .score-high { background: #00ff88; color: #000; }
+        .score-medium { background: #ffd700; color: #000; }
+        .score-low { background: #ff6b6b; color: #fff; }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="progress-bar" id="progressBar"></div>
+
+    <header>
+        <h1>💎 Billionaire Vault 💎</h1>
+        <p class="subtitle">दुनिया के 200 सबसे शक्तिशाली अमीरों का खजाना</p>
+    </header>
+
+    <div class="controls">
+        <input type="text" id="searchInput" placeholder="🔍 नाम से खोजें...">
+        <select id="countryFilter">
+            <option value="">🌍 सभी देश</option>
+            <option value="USA">🇺🇸 अमेरिका</option>
+            <option value="India">🇮🇳 भारत</option>
+            <option value="China">🇨🇳 चीन</option>
+            <option value="UK">🇬🇧 ब्रिटेन</option>
+            <option value="France">🇫्रांस</option>
+            <option value="Japan">🇯ापान</option>
+            <option value="Russia">🇷ूस</option>
+            <option value="Saudi">🇸ऊदी अरब</option>
+            <option value="UAE">🇦ईऊ</option>
+        </select>
+        <select id="industryFilter">
+            <option value="">🏭 सभी उद्योग</option>
+            <option value="Technology">💻 टेक्नोलॉजी</option>
+            <option value="Finance">🏦 फाइनेंस</option>
+            <option value="Retail">🛒 रिटेल</option>
+            <option value="Energy">⚡ ऊर्जा</option>
+            <option value="Healthcare">🏥 हेल्थकेयर</option>
+            <option value="Entertainment">🎬 मनोरंजन</option>
+            <option value="Real Estate">🏠 रियल एस्टेट</option>
+        </select>
+    </div>
+
+    <div class="container" id="billionaireContainer">
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>अमीरों का डेटा लोड हो रहा है...</p>
+        </div>
+    </div>
+
+    <!-- Scroll Buttons -->
+    <div class="scroll-controls">
+        <button class="scroll-btn scroll-up" onclick="scrollToTop()" title="ऊपर जाएं">⬆️</button>
+        <button class="scroll-btn scroll-down" onclick="scrollToBottom()" title="नीचे जाएं">⬇️</button>
+    </div>
+
+    <!-- Modal -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // Billionaire Data (Sample of 200)
+        const billionaires = [
+            {
+                id: 1,
+                name: "Elon Musk",
+                hindiName: "एलोन मस्क",
+                netWorth: "$232 बिलियन",
+                company: "Tesla, SpaceX, X (Twitter)",
+                industry: "Technology",
+                country: "USA",
+                age: 52,
+                experience: "20+ साल",
+                family: "पत्नी: None, बच्चे: 11",
+                philanthropy: "$5.7 बिलियन दान",
+                travel: "USA, China, Germany, Mars (Planning)",
+                relations: "USA, China, Germany से अच्छे संबंध",
+                revenueSources: "USA, China, Europe",
+                marriages: 3,
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Elon_Musk_Royal_Society_%28crop2%29.jpg/440px-Elon_Musk_Royal_Society_%28crop2%29.jpg",
+                fundamentalScore: 95,
+                listedCompanies: ["TSLA", "SpaceX (Private)"],
+                bio: "दुनिया के सबसे अमीर व्यक्ति, जिन्होंने इलेक्ट्रिक वाहन और अंतरिक्ष यात्रा में क्रांति लाई।"
+            },
+            {
+                id: 2,
+                name: "Jeff Bezos",
+                hindiName: "जेफ बेजोस",
+                netWorth: "$180 बिलियन",
+                company: "Amazon, Blue Origin",
+                industry: "Technology",
+                country: "USA",
+                age: 60,
+                experience: "30 साल",
+                family: "पत्नी: Lauren Sánchez, बच्चे: 4",
+                philanthropy: "$2.5 बिलियन दान",
+                travel: "USA, India, Europe, Space",
+                relations: "USA, India, UK से अच्छे संबंध",
+                revenueSources: "USA, Europe, Asia",
+                marriages: 2,
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Jeff_Bezos_at_the_2016_Code_Conference_%2827675262009%29_%28cropped%29.jpg/440px-Jeff_Bezos_at_the_2016_Code_Conference_%2827675262009%29_%28cropped%29.jpg",
+                fundamentalScore: 92,
+                listedCompanies: ["AMZN"],
+                bio: "ई-कॉमर्स के राजा, जिन्होंने Amazon से ऑनलाइन शॉपिंग की दुनिया बदली।"
+            },
+            {
+                id: 3,
+                name: "Bernard Arnault",
+                hindiName: "बर्नार्ड अर्नाल्ट",
+                netWorth: "$175 बिलियन",
+                company: "LVMH (Louis Vuitton, Dior)",
+                industry: "Retail",
+                country: "France",
+                age: 75,
+                experience: "40+ साल",
+                family: "पत्नी: Hélène Mercier, बच्चे: 5",
+                philanthropy: "$200 मिलियन दान",
+                travel: "France, USA, Italy, Japan",
+                relations: "France, USA, China से अच्छे संबंध",
+                revenueSources: "Europe, Asia, USA",
+                marriages: 2,
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Bernard_Arnault_%283%29_-_2017_%28cropped%29.jpg/440px-Bernard_Arnault_%283%29_-_2017_%28cropped%29.jpg",
+                fundamentalScore: 94,
+                listedCompanies: ["MC.PA"],
+                bio: "लक्जरी सामान के सम्राट, LVMH के मालिक।"
+            },
+            {
+                id: 4,
+                name: "Mukesh Ambani",
+                hindiName: "मुकेश अंबानी",
+                netWorth: "$116 बिलियन",
+                company: "Reliance Industries",
+                industry: "Energy",
+                country: "India",
+                age: 66,
+                experience: "40+ साल",
+                family: "पत्नी: Nita Ambani, बच्चे: 3 (Akash, Isha, Anant)",
+                philanthropy: "$1.5 बिलियन दान",
+                travel: "India, USA, UK, UAE",
+                relations: "India, USA, UK, UAE से अच्छे संबंध",
+                revenueSources: "India, USA, UK",
+                marriages: 1,
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Mukesh_Ambani.jpg/440px-Mukesh_Ambani.jpg",
+                fundamentalScore: 96,
+                listedCompanies: ["RELIANCE.NS"],
+                bio: "भारत के सबसे अमीर व्यक्ति, रिलायंस इंडस्ट्रीज के चेयरमैन।"
+            },
+            {
+                id: 5,
+                name: "Gautam Adani",
+                hindiName: "गौतम अडानी",
+                netWorth: "$84 बिलियन",
+                company: "Adani Group",
+                industry: "Energy",
+                country: "India",
+                age: 61,
+                experience: "35+ साल",
+                family: "पत्नी: Priti Adani, बच्चे: 2",
+                philanthropy: "$800 मिलियन दान",
+                travel: "India, Australia, Israel, USA",
+                relations: "India, Australia, Israel से अच्छे संबंध",
+                revenueSources: "India, Australia, Africa",
+                marriages: 1,
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Gautam_Adani.jpg/440px-Gautam_Adani.jpg",
+                fundamentalScore: 88,
+                listedCompanies: ["ADANIENT.NS", "ADANIPORTS.NS"],
+                bio: "इंफ्रास्ट्रक्चर और एनर्जी के किंग, अडानी ग्रुप के संस्थापक।"
+            },
+            {
+                id: 6,
+                name: "Larry Ellison",
+                hindiName: "लैरी एलिसन",
+                netWorth: "$142 बिलियन",
+                company: "Oracle",
+                industry: "Technology",
+                country: "USA",
+                age: 79,
+                experience: "45+ साल",
+                family: "पत्नी: None (4 पूर्व पत्नियां), बच्चे: 2",
+                philanthropy: "$1.5 बिलियन दान",
+                travel: "USA, Japan, Hawaii",
+                relations: "USA, Japan से अच्छे संबंध",
+                revenueSources: "USA, Global",
+                marriages: 4,
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Larry_Ellison_picture.png/440px-Larry_Ellison_picture.png",
+                fundamentalScore: 93,
+                listedCompanies: ["ORCL"],
+                bio: "Oracle के संस्थापक, टेक्नोलॉजी के दिग्गज।"
+            },
+            {
+                id: 7,
+                name: "Warren Buffett",
+                hindiName: "वॉरेन बफे",
+                netWorth: "$137 बिलियन",
+                company: "Berkshire Hathaway",
+                industry: "Finance",
+                country: "USA",
+                age: 93,
+                experience: "70+ साल",
+                family: "पत्नी: Astrid Menks, बच्चे: 3",
+                philanthropy: "$50+ बिलियन दान",
+                travel: "USA (Omaha, Nebraska)",
+                relations: "USA, Global",
+                revenueSources: "USA, Global",
+                marriages: 2,
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Warren_Buffett_at_the_2015_SelectUSA_Investment_Summit.jpg/440px-Warren_Buffett_at_the_2015_SelectUSA_Investment_Summit.jpg",
+                fundamentalScore: 98,
+                listedCompanies: ["BRK.A", "BRK.B"],
+                bio: "ऑमाहा का ओरेकल, दुनिया के सबसे सफल निवेशक।"
+            },
+            {
+                id: 8,
+                name: "Bill Gates",
+                hindiName: "बिल गेट्स",
+                netWorth: "$128 बिलियन",
+                company: "Microsoft (Former), Bill & Melinda Gates Foundation",
+                industry: "Technology",
+                country: "USA",
+                age: 68,
+                experience: "45+ साल",
+                family: "पत्नी: Divorced (Melinda), बच्चे: 3",
+                philanthropy: "$60+ बिलियन दान",
+                travel: "Global",
+                relations: "Global",
+                revenueSources: "USA, Global",
+                marriages: 1,
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Bill_Gates_2017_%28cropped%29.jpg/440px-Bill_Gates_2017_%28cropped%29.jpg",
+                fundamental
+              
