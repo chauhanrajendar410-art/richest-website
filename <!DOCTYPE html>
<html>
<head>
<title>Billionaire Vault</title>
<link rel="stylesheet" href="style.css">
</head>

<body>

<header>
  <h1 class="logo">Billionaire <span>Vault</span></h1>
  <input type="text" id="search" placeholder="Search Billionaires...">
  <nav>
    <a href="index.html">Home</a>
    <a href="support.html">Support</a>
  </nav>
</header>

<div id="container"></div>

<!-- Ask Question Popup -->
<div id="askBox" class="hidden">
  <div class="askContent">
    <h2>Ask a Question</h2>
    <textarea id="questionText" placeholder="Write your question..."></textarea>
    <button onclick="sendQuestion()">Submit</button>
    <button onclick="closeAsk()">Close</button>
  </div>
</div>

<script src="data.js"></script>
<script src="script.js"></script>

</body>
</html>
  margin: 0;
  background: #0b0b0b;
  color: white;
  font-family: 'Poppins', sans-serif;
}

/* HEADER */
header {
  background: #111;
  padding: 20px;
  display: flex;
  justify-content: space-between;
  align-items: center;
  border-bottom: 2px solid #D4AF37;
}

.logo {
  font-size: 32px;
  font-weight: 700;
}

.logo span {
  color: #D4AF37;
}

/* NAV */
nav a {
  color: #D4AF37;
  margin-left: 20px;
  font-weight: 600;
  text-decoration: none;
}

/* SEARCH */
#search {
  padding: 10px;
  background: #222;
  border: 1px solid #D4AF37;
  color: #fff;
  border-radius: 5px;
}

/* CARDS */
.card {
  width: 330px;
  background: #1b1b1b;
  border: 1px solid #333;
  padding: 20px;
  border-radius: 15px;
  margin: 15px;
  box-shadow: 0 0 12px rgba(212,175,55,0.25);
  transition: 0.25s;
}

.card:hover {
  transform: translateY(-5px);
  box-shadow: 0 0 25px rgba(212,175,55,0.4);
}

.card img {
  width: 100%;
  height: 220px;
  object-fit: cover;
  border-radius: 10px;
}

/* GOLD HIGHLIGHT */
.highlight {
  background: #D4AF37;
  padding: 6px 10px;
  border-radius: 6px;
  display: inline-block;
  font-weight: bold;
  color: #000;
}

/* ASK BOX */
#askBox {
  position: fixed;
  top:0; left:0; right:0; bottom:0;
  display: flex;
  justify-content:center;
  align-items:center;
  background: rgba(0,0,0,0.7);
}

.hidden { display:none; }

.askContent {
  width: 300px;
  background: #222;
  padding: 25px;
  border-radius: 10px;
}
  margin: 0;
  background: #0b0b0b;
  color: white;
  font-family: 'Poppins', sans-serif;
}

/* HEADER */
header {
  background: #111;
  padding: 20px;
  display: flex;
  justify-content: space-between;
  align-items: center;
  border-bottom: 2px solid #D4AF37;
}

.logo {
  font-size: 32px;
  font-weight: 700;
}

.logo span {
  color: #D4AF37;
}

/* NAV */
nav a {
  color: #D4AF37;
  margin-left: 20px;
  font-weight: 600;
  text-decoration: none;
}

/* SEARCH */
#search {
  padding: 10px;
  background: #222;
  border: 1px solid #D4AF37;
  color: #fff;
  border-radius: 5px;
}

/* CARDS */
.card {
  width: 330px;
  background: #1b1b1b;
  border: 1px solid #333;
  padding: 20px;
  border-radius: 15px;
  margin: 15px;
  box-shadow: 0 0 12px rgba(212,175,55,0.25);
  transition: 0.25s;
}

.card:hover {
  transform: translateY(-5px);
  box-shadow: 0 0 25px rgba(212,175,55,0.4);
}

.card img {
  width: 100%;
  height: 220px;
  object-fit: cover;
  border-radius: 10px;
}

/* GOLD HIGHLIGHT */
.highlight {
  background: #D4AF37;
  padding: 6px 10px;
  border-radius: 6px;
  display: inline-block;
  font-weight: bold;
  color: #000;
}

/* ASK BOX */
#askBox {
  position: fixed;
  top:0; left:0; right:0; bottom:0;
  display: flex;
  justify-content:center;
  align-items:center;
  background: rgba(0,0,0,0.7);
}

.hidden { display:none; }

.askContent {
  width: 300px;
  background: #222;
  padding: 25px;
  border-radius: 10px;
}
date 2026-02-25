@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Billionaire Vault</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+  <h1 class="logo">Billionaire <span>Vault</span></h1>
+  <input type="text" id="search" placeholder="Search Billionaires...">
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="support.html">Support</a>
+  </nav>
+</header>
+
+<div id="container"></div>
+
+<!-- Ask Question Popup -->
+<div id="askBox" class="hidden">
+  <div class="askContent">
+    <h2>Ask a Question</h2>
+    <textarea id="questionText" placeholder="Write your question..."></textarea>
+    <button onclick="sendQuestion()">Submit</button>
+    <button onclick="closeAsk()">Close</button>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
